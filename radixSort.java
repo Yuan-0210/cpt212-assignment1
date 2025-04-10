@@ -61,6 +61,13 @@ public class radixSort {
                     }
                 }
             }
+
+            // Print the state of buckets after the current digit pass
+            System.out.println("After processing digit at index " + (numDigits - 1 - digitIndex) + " (from right):");
+            for (int i = 0; i < 10; i++) {
+                System.out.println("  Bucket " + i + ": " + dest.get(i));
+            }
+            System.out.println(); // Empty line for better readability between iterations
         }
 
         // Collect sorted numbers from the final array after all digit passes
@@ -72,7 +79,9 @@ public class radixSort {
         }
 
         // Output the final sorted list of numbers
+        System.out.println("Final sorted result:");
         System.out.println(String.join(" ", sorted));
     }
 }
+
 
