@@ -1,5 +1,4 @@
 // Import necessary libraries
-
 import java.util.Arrays;
 
 // The algorithm is based on the Least Significant Digit (LSD) Radix Sort method.
@@ -56,9 +55,6 @@ public class LSDRaditSortWithoutCounter {
     // Main function to implement radix sort
     // It uses "countingSort()" function to sort the numbers based on each digit
     public static void main(String[] args) {
-        
-        // Counter for the number of passes
-        int counterPass = 1;
 
         // Example number to be sorted
         int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503};
@@ -73,13 +69,7 @@ public class LSDRaditSortWithoutCounter {
         // Starting from the least significant digit to the most significant digit (1s, 10s and 100s as there are only 3-digit numbers in this example)
         for (int exp = 1; max / exp > 0; exp *= 10) {
             numbers = countingSort(numbers, exp);
-            if (counterPass == 1)
-                System.out.println("First Pass" + ": " + Arrays.toString(numbers)); 
-            else if (counterPass == 2)
-                System.out.println("Second Pass" + ": " + Arrays.toString(numbers));
-            else 
-                System.out.println("Third pass" + ": " + Arrays.toString(numbers));
-            counterPass++;
+            System.out.println("After sorting on digit place " + exp + ": " + Arrays.toString(numbers));
         }
 
         // Display the sorted array in ascending order

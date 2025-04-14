@@ -1,5 +1,4 @@
 // Import necessary libraries
-
 import java.util.Arrays;
 
 // The algorithm is based on the Least Significant Digit (LSD) Radix Sort method.
@@ -62,7 +61,7 @@ public class LSDRadixSort {
             int digit = (num / exp) % 10;
             primitiveOps += 3; // division, modulo, assignment
             count[digit]++;
-            primitiveOps += 2; // post increment, assignment
+            primitiveOps += 2; // indexing + assignment
         }
 
         // Update count[i] so it contains the cumulative count of each digit
@@ -78,7 +77,7 @@ public class LSDRadixSort {
             primitiveOps += 2; // assignment, comparison for the loop
             count[i] += count[i - 1];
             primitiveOps += 3; // substraction, addition, assignment
-            primitiveOps++; // post increment for the loop
+            primitiveOps++; // substraction for the loop
         }
 
         // Build the output array
@@ -98,7 +97,7 @@ public class LSDRadixSort {
         * The final sorted array will be:
         * {112, 121, 122}
         * This preserves the original relative order of equal elements.
-         */
+        */
         for (int i = array.length - 1; i >= 0; i--) {
             primitiveOps += 2; // assignment, subtraction, comparison for loop
             int digit = (array[i] / exp) % 10;
@@ -106,8 +105,8 @@ public class LSDRadixSort {
             output[count[digit] - 1] = array[i];
             primitiveOps += 2; // subtraction, assignment
             count[digit]--;
-            primitiveOps += 2; // substration, assignment
-            primitiveOps++; // post decrement for the loop
+            primitiveOps++; // assignment
+            primitiveOps++; // subtraction for the loop
         }
 
         // Display the reordered array after sorting on the current digit(1s, 10s or 100s)
@@ -119,10 +118,6 @@ public class LSDRadixSort {
     // It uses "countingSort()" function to sort the numbers based on each digit
     public static void main(String[] args) {
         primitiveOps++; // method call
-
-        // Counter for the number of passes
-        int counterPass = 1;
-        primitiveOps++; // assignment
 
         // Example number to be sorted
         int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503};
@@ -142,20 +137,8 @@ public class LSDRadixSort {
             primitiveOps += 3; // assignment, division (comparison) for loop
             numbers = countingSort(numbers, exp);
             primitiveOps += 2; // assignment, mehtod call
-            if (counterPass == 1) {
-                primitiveOps++; // comparison
-                System.out.println("First Pass" + ": " + Arrays.toString(numbers));
-            } else if (counterPass == 2) {
-                primitiveOps++; // comparison
-                System.out.println("Second Pass" + ": " + Arrays.toString(numbers));
-            } else {
-                primitiveOps++; // comparison
-                System.out.println("Third pass" + ": " + Arrays.toString(numbers));
-
-            }
-            counterPass++;
-            primitiveOps++; // addition
-            primitiveOps++; // multiplication for the
+            System.out.println("After sorting on digit place " + exp + ": " + Arrays.toString(numbers));
+            primitiveOps++; // multiplication
         }
 
         // Display the reordered array in ascending order
