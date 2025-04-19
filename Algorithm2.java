@@ -2,6 +2,7 @@ public class Algorithm2 {
     private static int counter =0;
     // Function to fill the array with zeros
     public static int[] resetArray(int[] arr) {
+        counter+=1; // 1 assign
         for (int i = 0; i < arr.length; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             arr[i] = 0;
@@ -14,7 +15,8 @@ public class Algorithm2 {
     // Function to find the maximum length of strings in the array
     public static int findMaxLength(String[] array) {
         int max = 0;
-        counter+=1; //1 assign
+        counter+=1; // 1 assign
+        counter+=1; // 1 assign
         for (int i = 0; i < array.length; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             String str = array[i];
@@ -72,6 +74,7 @@ public class Algorithm2 {
         * count[20] - 't' = 0,      count[21] - 'u' = 0, count[22] - 'v' = 0, count[23] - 'w' = 0,
         * count[24] - 'x' = 0,      count[25] - 'y' = 0, count[26] - 'z' = 0
         */
+        counter+=1; // 1 assign
         for (int i = 0; i < array.length; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             int index;
@@ -102,6 +105,7 @@ public class Algorithm2 {
         * count[20] = 8, count[21] = 8, count[22] = 8, count[23] = 8, count[24] = 8,
         * count[25] = 8, count[26] = 8
         */
+        counter+=1; // 1 assign
         for (int i = 1; i < 27; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             count[i] += count[i - 1];
@@ -109,6 +113,7 @@ public class Algorithm2 {
         }
 
         // Build output array (iterate in reverse for stability)
+        counter+=1; // 1 assign
         for (int i = array.length - 1; i >= 0; i--) {
             counter+=4; // 1 assign, 1 arithmetic, 1 compare, 1 op
             int index;
@@ -136,44 +141,66 @@ public class Algorithm2 {
 
         // Example of an array to be sorted
         String[] words = {"dog", "ti", "bat", "bad", "hat", "tin", "ape", "zoo"};
+        counter+=1; // 1 assign
 
         // Display the original array
         System.out.println("=== Original array ===");
         System.out.print("Original array: ");
+        counter+=1; // 1 assign
         for (int i = 0; i < words.length; i++) {
+            counter+=3; // 1 assign, 1 compare, 1 op
             System.out.print(words[i] + " ");
+            counter+=2; // 1 lookup, 1 arithmetic
         }
         System.out.println("\n");
 
         // Find the max word length to determine number of passes
         int maxLen = findMaxLength(words);
+        counter+=2; // 1 assign, 1 call
 
         // Sort from last character to first
+        counter+=1; // 1 assign
         for (int exp = maxLen - 1; exp >= 0; exp--) {
+            counter+=4; // 1 assign, 1 arithmetic, 1 compare, 1 op
             words = countingSort(words, exp);
+            counter+=2; // 1 assign, 1 call
 
             System.out.println("=== After sorting on character position " + (exp + 1) + " ===");
+            counter+=3; // 3 arihmetic
 
             // Buckets: 0 for missing, 1-26 for 'a' to 'z'
             String[] buckets = new String[27];
+            counter+=1; // 1 assign
             buckets[0] = "(empty): ";
+            counter+=2; // 1 assign, 1 lookup
+            counter+=1; // 1 assign
             for (int i = 1; i < 27; i++) {
+                counter+=3; // 1 assign, 1 compare, 1 op
                 buckets[i] = (char) ('a' + i - 1) + ": ";
+                counter+=5; // 1 lookup, 1 assign , 3 arithmetic
             }
-
+            counter+=1; // 1 assign
             for (int i = 0; i < words.length; i++) {
+                counter+=3; // 1 assign, 1 compare, 1 op
                 int index;
+                counter+=3; // 1 compare, 1 lookup, 1 call
                 if (exp < words[i].length()) {
                     char ch = words[i].charAt(exp);
+                    counter+=3; // 1 assign, 1 lookup, 1 call
                     index = ch - 'a' + 1;
+                    counter+=3; // 2 arithmetic, 1 assign
                 } else {
-                    index = 0; 
+                    index = 0;
+                    counter+=1; // 1 assign 
                 }
                 buckets[index] += words[i] + " ";
+                counter+=5; // 2 lookup, 2 arithmetic, 1 assign
             }
-
+            counter+=1; // 1 assign
             for (int i = 0; i < buckets.length; i++) {
+                counter+=3; // 1 assign, 1 compare, 1 op
                 System.out.println(buckets[i]);
+                counter+=1; // 1 lookup
             }
 
             System.out.println();
@@ -183,7 +210,9 @@ public class Algorithm2 {
         System.out.println("=== Final sorted array ===");
         System.out.print("Reordered array: ");
         for (String word : words) {
+            counter+=2; // 1 op, 1 assign
             System.out.print(word + " ");
+            counter+=1; // 1 arithmetic
         }
         System.out.println("\nTotal primitive operations: " + counter);
     }

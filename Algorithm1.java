@@ -2,6 +2,7 @@ public class Algorithm1 {
     private static int counter =0;
     // Function to fill the count array with zeros
     public static int[] resetArray(int[] arr) {
+        counter+=1; // 1 assign
         for (int i = 0; i < arr.length; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             arr[i] = 0;
@@ -15,6 +16,7 @@ public class Algorithm1 {
     public static int findMax(int[] array) {
         int max = array[0];
         counter+=2; // 1 assign, 1 lookup
+        counter+=1; // 1 assign
         for (int i = 0; i < array.length; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             counter+=2; // 1 lookup, 1 compare
@@ -82,6 +84,7 @@ public class Algorithm1 {
          * count[0] = 1, count[1] = 1, count[2] = 0, count[3] = 1, count[4] = 0,
          * count[5] = 1, count[6] = 1, count[7] = 2, count[8] = 0, count[9] = 1
          */
+        counter+=1; // 1 assign
         for (int i = 0; i < array.length; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             int num = array[i];
@@ -101,6 +104,7 @@ public class Algorithm1 {
          * Therefore, count[0] = 1, count[1] = 2, count[2] = 2, count[3] = 3, count[4] = 3,
          * count[5] = 4, count[6] = 5, count[7] = 7, count[8] = 7, count[9] = 8
          */
+        counter+=1; // 1 assign
         for (int i = 1; i < 10; i++) {
             counter+=3; // 1 assign, 1 compare, 1 op
             count[i] += count[i - 1];
@@ -125,6 +129,7 @@ public class Algorithm1 {
         * {112, 121, 122}
         * This preserves the original relative order of equal elements.
         */
+        counter+=1; // 1 assign
         for (int i = array.length - 1; i >= 0; i--) {
             counter+=4; // 1 assign, 1 arithmetic, 1 compare, 1 op
             int digit = (array[i] / exp) % 10;
@@ -145,39 +150,59 @@ public class Algorithm1 {
 
         // Example of an array to be sorted
         int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503 };
+        counter+=1; // 1 assign
 
         // Display the original array
         System.out.println("=== Original array ===");
         System.out.print("Original array: ");
+        counter+=1; // 1 assign
         for (int i = 0; i < numbers.length; i++) {
+            counter+=3; // 1 assign, 1 compare, 1 op
             System.out.print(numbers[i] + " ");
+            counter+=2; // 1 lookup, 1 arithmetic
         }
         System.out.println("\n");
 
         // Find the maximum number to know the number of digits with the "findMax()" function
         int max = findMax(numbers);
+        counter+=2; // 1 assign, 1 call
 
         // Call "countingSort()" function for each digit place
+        counter+=1; // 1 assign
         for (int exp = 1; max / exp > 0; exp *= 10) {
+            counter+=4; // 1 assign, 2 arithmetic, 1 compare
             numbers = countingSort(numbers, exp);
+            counter+=2; // 1 assign, 1 call
 
             System.out.println("=== After sorting on digit place " + exp + " ===");
-
+            counter+=2; // 2 arithmetic
+            
             // Create buckets for digits 0–9
             String[] buckets = new String[10];
+            counter+=1; // 1 assign
+            counter+=1; // 1 assign
             for (int i = 0; i < 10; i++) {
+                counter+=3; // 1 assign, 1 compare, 1 op
                 buckets[i] = i + ": ";
+                counter+=3; // 1 lookup, 1 assign, 1 arithmetic
             }
 
             // Assign numbers to corresponding digit buckets
+            counter+=1; // 1 assign
             for (int i = 0; i < numbers.length; i++) {
+                counter+=3; // 1 assign, 1 compare, 1 op
                 int digit = (numbers[i] / exp) % 10;
+                counter+=4; // 1 assign, 2 arithmetic, 1 lookup
                 buckets[digit] += numbers[i] + " ";
+                counter+=4; // 2 lookup, 2 arithmetic
             }
 
             // Print each bucket
+            counter+=1; // 1 assign
             for (int i = 0; i < buckets.length; i++) {
+                counter+=3; // 1 assign, 1 compare, 1 op
                 System.out.println(buckets[i]);
+                counter+=1; // 1 lookup
             }
 
             System.out.println();
@@ -186,8 +211,11 @@ public class Algorithm1 {
         // Display the sorted array in ascending order
         System.out.println("=== Final sorted array ===");
         System.out.print("Reordered array: ");
+        counter+=1; // 1 assign
         for (int i = 0; i < numbers.length; i++) {
+            counter+=3; // 1 assign, 1 compare, 1 op
             System.out.print(numbers[i] + " ");
+            counter+=2; // 1 arithmetic, 1 lookup
         }
         System.out.println("\nTotal primitive operations: " + counter);
     }
