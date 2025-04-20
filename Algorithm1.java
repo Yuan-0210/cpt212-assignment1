@@ -149,7 +149,7 @@ public class Algorithm1 {
     public static void main(String[] args) {
 
         // Example of an array to be sorted
-        int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503 };
+        int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503, 1, 45, 180, 222, 500, 720, 30, 90};
         counter+=1; // 1 assign
 
         // Display the original array

@@ -140,7 +140,24 @@ public class Algorithm2 {
     public static void main(String[] args) {
 
         // Example of an array to be sorted
-        String[] words = {"dog", "ti", "bat", "bad", "hat", "tin", "ape", "zoo"};
+        String[] words = {
+            "dog", "ti", "bat", "bad", "hat", "tin", "ape", "zoo",
+            "x", "rv", "ubj", "ft", "q", "hz", "klm", "sj",
+            "j", "sv", "rm", "qaz", "zt", "n", "ghk", "pl",
+            "mo", "yp", "em", "rq", "t", "nd", "cvb", "ak",
+            "p", "xy", "zq", "om", "hd", "wt", "efa", "gn",
+            "uv", "qr", "jm", "ko", "ev", "bt", "sn", "wx",
+            "y", "ac", "zb", "lo", "ir", "ps", "fv", "cw",
+            "du", "vc", "na", "lg", "kp", "jy", "fz", "wb",
+            "bd", "it", "ja", "mx", "pu", "qe", "rh", "sz",
+            "lx", "zv", "fy", "sb", "ca", "tw", "kh", "ae"
+          }
+          
+          
+          
+          
+       
+       ;
         counter+=1; // 1 assign
 
         // Display the original array
