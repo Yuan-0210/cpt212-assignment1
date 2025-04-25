@@ -1,15 +1,27 @@
 public class Algorithm1 {
     private static int counter =0;
-    // Function to fill the count array with zeros
-    public static int[] resetArray(int[] arr) {
-        counter+=1; // 1 assign
-        for (int i = 0; i < arr.length; i++) {
-            counter+=3; // 1 assign, 1 compare, 1 op
-            arr[i] = 0;
-            counter+=2; // 1 lookup, 1 assign
+    private static Integer [][] array1;
+    private static Integer [][] array2;
+    private static int [] countArray = new int[10];
+    private static int maxDigit;
+
+    public static void arrayInitialization (int n){
+        array1 = new Integer [10][n];
+        array2 = new Integer [10][n];
+    }
+
+    private static void countArrayReset () {
+        for (int i = 0; i < 10; i++) {
+            countArray[i] = 0;
         }
-        counter+=1; // 1 return
-        return arr;
+    }
+
+    private static void resetArray(Integer[][] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                array[i][j] = null; // Set each element to null
+            }
+        }
     }
 
     // Function to find the maximum number in the array
@@ -31,118 +43,94 @@ public class Algorithm1 {
 
     // The "countingSort()" function to sort the numbers based on the digit
     // The parameter array[] is the array to be sorted
-    private static int[] countingSort(int[] array, int exp) {
-
-        // The variable to store the result of sorted array
-        int[] output = new int[array.length];
-        counter+=1; // 1 assign
-
-        // Initialize 2 count arrays with size 10 (0-9 digits)
-        int[] countArr1 = new int[10];
-        counter+=1; // 1 assign
-        int[] countArr2 = new int[10];
-        counter+=1; // 1 assign
-        int[] count;
-
-        // Decide which array to use for counting
-        int temp = exp;
-        counter+=1; // 1 assign
-        int zeroCount = 0;
-        counter+=1; // 1 assign
-
-        // Count the number of zeros in exp
-        while (temp > 0) {
-            counter+=1; // 1 compare
-            counter+=2; // 1 arithmetic, 1 compare
-            if (temp % 10 == 0) {
-                zeroCount++;
-                counter+=2; // 1 op, 1 assign
+    private static void sortingAlgorithm(int[] array, int exp) {
+        int radix;
+        if (exp == 1) {
+            for (int i = 0; i < array.length; i++) {
+                radix = (array[i] / exp) % 10;
+                array1[radix][countArray[radix]] = array[i];
+                countArray[radix]++;
             }
-            temp /= 10;
-            counter+=2; // 1 assign, 1 arithmetic
-        }
-
-        // Use countArr1 if zero count is even, else use countArr2
-        // So, first pass and third pass are passed to countArr1 and second pass is passed to countArr2
-        counter+=2; // 1 arithmetic, 1 compare
-        if (zeroCount % 2 == 0) {
-            countArr1 = resetArray(countArr1);
-            counter+=2; // 1 call, 1 assign
-            count = countArr1;
-            counter+=1; // 1 assign
+            countArrayReset();
+        } else if (Math.log10(exp) % 2 == 1) {
+            for (Integer[] row: array1) {
+                for (Integer element: row){
+                    if(element == null)
+                        break;
+                    radix = (element / exp) % 10;
+                    array2[radix][countArray[radix]] = element;
+                    countArray[radix]++;
+                }
+            }
+            if (Math.log10(exp) != maxDigit -1)
+                resetArray(array1);
+            countArrayReset();
         } else {
-            countArr2 = resetArray(countArr2);
-            counter+=2; // 1 call, 1 assign
-            count = countArr2;
-            counter+=1; // 1 assign
+            for (Integer [] row: array2) {
+                for (Integer element: row) {
+                    if (element == null)
+                        break;
+                    radix = (element / exp) % 10;
+                    array1[radix][countArray[radix]] = element;
+                    countArray[radix]++;
+                }
+            }
+            if (Math.log10(exp) != maxDigit - 1)
+                resetArray(array2);
+            countArrayReset();
         }
+    }
 
-        // Store count of occurrences in count[]
-        /*
-         * For example, if the input array is {275, 87, 426, 61, 409, 170, 677, 503}
-         * and we are sorting based on the 1s place (exp = 1), the count array will be: 
-         * count[0] = 1, count[1] = 1, count[2] = 0, count[3] = 1, count[4] = 0,
-         * count[5] = 1, count[6] = 1, count[7] = 2, count[8] = 0, count[9] = 1
-         */
-        counter+=1; // 1 assign
-        for (int i = 0; i < array.length; i++) {
-            counter+=3; // 1 assign, 1 compare, 1 op
-            int num = array[i];
-            counter+=2; // 1 lookup, 1 assign
-            int digit = (num / exp) % 10;
-            counter+=3; // 1 assign, 2 arithmetic
-            count[digit]++;
-            counter+=3; // 1 lookup, 1 op, 1 assign
+    public static void display(int exp) {
+        if (Math.log10(exp) % 2 == 1) {
+            for (int i = 0; i < array2.length; i++){
+                System.out.print(i + ": ");
+                for (Integer x: array2[i]) {
+                    if (x == null)
+                        break;
+                    System.out.print(x +" ");
+                }
+                System.out.println();
+            }
+        } else {
+            for (int i = 0; i < array1.length; i++){
+                System.out.print(i + ": ");
+                for (Integer x: array1[i]) {
+                    if (x == null)
+                        break;
+                    System.out.print(x +" ");
+                }
+                System.out.println();
+            }
         }
+        System.out.println();
+    }
 
-        // Update count[i] so it contains the cumulative count of each digit
-        // This can be used to place the numbers in the output array so that the order is maintained
-        /*
-         * Based on the previous example, the updated count array will be:
-         * digit: 0,1,2,3,4,5,6,7,8,9
-         * count: 1,2,2,3,3,4,5,7,7,8
-         * Therefore, count[0] = 1, count[1] = 2, count[2] = 2, count[3] = 3, count[4] = 3,
-         * count[5] = 4, count[6] = 5, count[7] = 7, count[8] = 7, count[9] = 8
-         */
-        counter+=1; // 1 assign
-        for (int i = 1; i < 10; i++) {
-            counter+=3; // 1 assign, 1 compare, 1 op
-            count[i] += count[i - 1];
-            counter+=5; // 2 lookup, 2 arithmetic, 1 assign
+    public static void reorder(int maxNumbers) {
+        if (maxDigit % 2 == 0) {
+            for (Integer[] row : array2) {
+                for (Integer x : row) {
+                    if (x == null)
+                        break;
+                    System.out.print(x + " ");                 
+                }
+            }
+        } else {
+            for (Integer[] row : array1) {
+                for (Integer x : row) {
+                    if (x == null)
+                        break;
+                    System.out.print(x + " ");                
+                }
+            }
         }
+    }
 
-        // Build the output array
-        // Start the for loop with the last element of array to maintain stability
-        // If two numbers have the same digit, the one that appeared first in the original array will appear first in the sorted array
-        /*
-        * For example, the input array is {112, 121, 122}
-        * When sorting by the least significant digit (1s place), the sorted order based on the digit is:
-        * - 112 has 2 in the 1s place
-        * - 121 has 1 in the 1s place
-        * - 122 has 2 in the 1s place
-        *
-        * In the unstable sort (start from the first element of the array), 121 would come before 122, and the final sorted array would look like:
-        * {121, 122, 112}, which doesn't preserve the original order of equal elements.
-        *
-        * However, in the stable sort (start from the last element of the array), since 112 appeared first in the original array, it will appear first in the sorted array.
-        * The final sorted array will be:
-        * {112, 121, 122}
-        * This preserves the original relative order of equal elements.
-        */
-        counter+=1; // 1 assign
-        for (int i = array.length - 1; i >= 0; i--) {
-            counter+=4; // 1 assign, 1 arithmetic, 1 compare, 1 op
-            int digit = (array[i] / exp) % 10;
-            counter+=4; // 1 assgn, 1 lookup, 2 arithmetic
-            output[count[digit] - 1] = array[i];
-            counter+=5; // 1 arithmetic, 3 lookup, 1 assign
-            count[digit]--;
-            counter+=3; // 1 lookup, 1 op, 1 assign
-        }
-
-        // Return the output array
-        counter+=1; // 1 return
-        return output;
+    public static void findMaxDigit(int maxNumbers) {
+        if (maxNumbers == 0)
+            maxDigit = 1; 
+        else
+            maxDigit = (int) Math.log10(Math.abs(maxNumbers)) + 1; 
     }
 
     // Main function to implement the algorithm
@@ -151,6 +139,7 @@ public class Algorithm1 {
         // Example of an array to be sorted
         int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503, 1, 45, 180, 222, 500, 720, 30, 90};
         counter+=1; // 1 assign
+        arrayInitialization(numbers.length);
 
         // Display the original array
         System.out.println("=== Original array ===");
@@ -165,45 +154,21 @@ public class Algorithm1 {
 
         // Find the maximum number to know the number of digits with the "findMax()" function
         int max = findMax(numbers);
+        findMaxDigit(max);
+
         counter+=2; // 1 assign, 1 call
 
         // Call "countingSort()" function for each digit place
         counter+=1; // 1 assign
         for (int exp = 1; max / exp > 0; exp *= 10) {
             counter+=4; // 1 assign, 2 arithmetic, 1 compare
-            numbers = countingSort(numbers, exp);
+            sortingAlgorithm(numbers, exp);
             counter+=2; // 1 assign, 1 call
 
             System.out.println("=== After sorting on digit place " + exp + " ===");
             counter+=2; // 2 arithmetic
+            display(exp);
             
-            // Create buckets for digits 0–9
-            String[] buckets = new String[10];
-            counter+=1; // 1 assign
-            counter+=1; // 1 assign
-            for (int i = 0; i < 10; i++) {
-                counter+=3; // 1 assign, 1 compare, 1 op
-                buckets[i] = i + ": ";
-                counter+=3; // 1 lookup, 1 assign, 1 arithmetic
-            }
-
-            // Assign numbers to corresponding digit buckets
-            counter+=1; // 1 assign
-            for (int i = 0; i < numbers.length; i++) {
-                counter+=3; // 1 assign, 1 compare, 1 op
-                int digit = (numbers[i] / exp) % 10;
-                counter+=4; // 1 assign, 2 arithmetic, 1 lookup
-                buckets[digit] += numbers[i] + " ";
-                counter+=4; // 2 lookup, 2 arithmetic
-            }
-
-            // Print each bucket
-            counter+=1; // 1 assign
-            for (int i = 0; i < buckets.length; i++) {
-                counter+=3; // 1 assign, 1 compare, 1 op
-                System.out.println(buckets[i]);
-                counter+=1; // 1 lookup
-            }
 
             System.out.println();
         }
@@ -211,12 +176,7 @@ public class Algorithm1 {
         // Display the sorted array in ascending order
         System.out.println("=== Final sorted array ===");
         System.out.print("Reordered array: ");
-        counter+=1; // 1 assign
-        for (int i = 0; i < numbers.length; i++) {
-            counter+=3; // 1 assign, 1 compare, 1 op
-            System.out.print(numbers[i] + " ");
-            counter+=2; // 1 arithmetic, 1 lookup
-        }
+        reorder(max);
         System.out.println("\nTotal primitive operations: " + counter);
     }
 
