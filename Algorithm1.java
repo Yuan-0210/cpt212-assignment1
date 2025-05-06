@@ -14,6 +14,8 @@ public class Algorithm1 {
     private static Integer[][] array1;
     private static Integer[][] array2;
 
+    private static int[] SortedList;
+
     // Parallel array that keep track the number of elements in each digit row (0-9)
     private static int[] digitRowCounts = new int[10];
 
@@ -24,7 +26,7 @@ public class Algorithm1 {
      * Initializes two 2D arrays (array1 and array2) with 10 rows 
      * for digits 0–9 and 'size' columns (based on the number of elements to sort).
      *
-     * Worst case: all numbers could go into the same bucket , 
+     * Worst case: all numbers could go into the same digit row , 
      * so each row needs 'size' slots to avoid overflow.
      *
      * Example: for input {23, 45, 12, 99, 5} (5 numbers)
@@ -32,7 +34,7 @@ public class Algorithm1 {
      *
      * @param size the number of elements in the input array
     */
-    public static void initializeBuckets(int size) {
+    public static void initializeArray(int size) {
         array1 = new Integer[10][size]; // one assignment
         array2 = new Integer[10][size]; // one assignment
         operationCount += 2; // operation count is 1 + 1
@@ -167,7 +169,7 @@ public class Algorithm1 {
      * @param array input array contains numbers to be sort, only used for the first sorting pass
      * @param placeValue current place value (1, 10, 100, 1000 etc.)
      */    
-    private static void distributeToBuckets(int[] array, int placeValue) {
+    private static void sortingPass(int[] array, int placeValue) {
         
         /**
          * Stores the current digit of a number at the given place value.
@@ -433,123 +435,109 @@ public class Algorithm1 {
      * - Chooses the active 2D array (either array1 or array2) depending on whether the current place value is odd or even.
      * - Iterates over each digit row (0-9) and prints the numbers stored in in, stopping at null (empty spots, means there is no more numbers left behind).
     */
-    public static void displayBuckets(int placeValue) {
+    public static void displayArray(int placeValue) {
         Integer[][] activeArray;
-
-        /**
-         * one method call (log10())
-         * one modulo (%)
-         * one comparison
-         */
-        operationCount += 2;
 
         // if it is odd pass, the active array is array2, else it is array1
         if (Math.log10(placeValue) % 2 == 1) {
-            // one assignment (to active array)
-            operationCount += 1;
             activeArray = array2;
         } else {
-            // one assignment (to active array)
-            operationCount += 1;
             activeArray = array1;
         }
 
-        //one assignment (int i = 0)
-        operationCount += 1;
         for (int i = 0; i < activeArray.length; i++) { // Outer loop, loop through 10 digit row of active array
             System.out.print(i + ": ");
-
-            /**
-            * one method call (System.out.print())
-            * one addition, one assignment (i++ also equivalent to i = i + 1)
-            * one accessing member variable (activeArray.length)
-            * one comparison (i < activeArray.length) 
-            */
-            operationCount += 5;
-
-            // one assignment (int j = 0)
-            operationCount += 1;
             for (int j = 0; j < activeArray[i].length; j++) { // Inner loop, loop through every numbers contain in that digit row
-                /**
-                * one addition, one assignment (j++ also equivalent to j = j + 1)
-                * one accessing member variable (activeArray[i].length)
-                * one array indexing (activeArray[i])
-                * one comparison (j < activeArray[i].length) 
-                */
-                operationCount += 5;
                 if (activeArray[i][j] == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
                 System.out.print(activeArray[i][j] + " "); // display the number in the digit row
-                /**
-                 * two array indexing
-                 * one comparison
-                 * one method call (System.out.print())
-                */
-                operationCount += 4;
             }
             System.out.println();
-            /**
-            * one extra comparison (j < activeArray[i].length) where j = activeArray[i].length, reached end of digit rows
-            * one accessing member variable (activeArray[i].length)
-            * one array indexing (activeArray[i])
-            * one method call (System.out.println())
-            */
-            operationCount += 4;
         }
         System.out.println();
-        /**
-        * one extra comparison (i < activeArray.length) where i = activeArray.length
-        * one accessing member variable (activeArray.length)
-        * one method call (System.out.println())
-        */
-        operationCount += 3;
     }
 
-    public static void printSortedArray() {
-        Integer[][] finalBucket = (maxDigitLength % 2 == 0) ? array2 : array1;
-        for (Integer[] row : finalBucket) {
-            for (Integer value : row) {
-                if (value == null) break;
-                System.out.print(value + " ");
+    public static void Reorder() {
+        Integer[][] LastArray = (maxDigitLength % 2 == 0) ? array2 : array1;
+        int totalElements = 0;
+
+        if (maxDigitLength % 2 == 0) {
+            LastArray = array2;
+        } else {
+            LastArray = array1;
+        }
+        
+        for (int i = 0; i < LastArray.length; i++) {
+            for (int j = 0; j < LastArray[i].length; j++) {
+                if (LastArray[i][j] != null) {
+                    totalElements++;
+                }
+            }
+        }
+
+        SortedList = new int[totalElements];
+        int index = 0;
+        for (int i = 0; i < LastArray.length; i++) {
+            for (int j = 0; j < LastArray[i].length; j++) {
+                if (LastArray[i][j] != null) {
+                    SortedList[index++] = LastArray[i][j];
+                }
             }
         }
     }
 
-    public static void calculateMaxDigitLength(int largestValue) {
-        maxDigitLength = (largestValue == 0) ? 1 : (int) Math.log10(Math.abs(largestValue)) + 1;
+    public static void displaySortedList() {
+        for (int i = 0; i < SortedList.length; i++) {
+            System.out.print(SortedList[i] + " ");
+        }
     }
 
-    public static void main(String[] args) {
-        int[] numbers = {275, 87, 426, 61, 409, 170, 677, 8910, 2182, 45, 180, 222, 500, 720, 30, 90};
-        operationCount++;
-
-        initializeBuckets(numbers.length);
-
-        System.out.println("=== Original array ===");
-        System.out.print("Original array: ");
-        for (int num : numbers) {
-            System.out.print(num + " ");
-            operationCount += 2;
-        }
-        System.out.println("\n");
-
+    public static void Sort(int [] numbers) {
+        initializeArray(numbers.length);
         int largestValue = findLargestValue(numbers);
         calculateMaxDigitLength(largestValue);
-        operationCount += 2;
 
         for (int placeValue = 1; largestValue / placeValue > 0; placeValue *= 10) {
-            operationCount += 4;
-            distributeToBuckets(numbers, placeValue);
-            operationCount += 2;
+            sortingPass(numbers, placeValue);
 
             System.out.println("=== After sorting on digit place " + placeValue + " ===");
             operationCount += 2;
-            displayBuckets(placeValue);
+            displayArray(placeValue);
         }
+    }
 
+    private static void calculateMaxDigitLength(int largestValue) {
+        if (largestValue == 0) {
+            maxDigitLength = 1;
+        } else {
+            maxDigitLength = (int) Math.log10(Math.abs(largestValue) + 1);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        // number array to sort
+        int[] numbers = {275, 87, 426, 61, 409, 170, 677, 8910, 2182, 45, 180, 222, 500, 720, 30, 90};
+
+        // display the initial array of numbers
+        System.out.println("=== Initial array ===");
+        System.out.print("Initial array: ");
+        for (int num : numbers) {
+            System.out.print(num + " ");
+        }
+        System.out.println("\n");
+
+        // pass the array to the Sorting algorithm methods
+        Sort(numbers);
+
+        // Reorder after sorting
+        Reorder();
+
+        // display the final array after sort
         System.out.println("=== Final sorted array ===");
-        System.out.print("Sorted array: ");
-        printSortedArray();
+        System.out.print("Sorted array: "); 
+        displaySortedList();
 
+        // display how many operation count is in the sorting algorithm
         System.out.println("\nTotal primitive operations: " + operationCount);
     }
 }
