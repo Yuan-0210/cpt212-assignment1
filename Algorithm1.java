@@ -36,28 +36,17 @@ public class Algorithm1 {
      * @param size the number of elements in the input array
     */
     public static void initializeArray(int size) {
-        array1 = new Integer[10][size]; // one assignment
-        array2 = new Integer[10][size]; // one assignment
-        operationCount += 2; // operation count is 1 + 1
+        array1 = new Integer[10][size]; 
+        array2 = new Integer[10][size]; 
     }
 
     /**
      *  Reset the count of elements in each digit row to zero before the next sorting pass
     */
     private static void resetDigitRowCounts() {
-        // one assignment (int i = 0)
-        operationCount += 1;
-        
         for (int i = 0; i < 10; i++) {
-            // one addition, one assignment (i++ also equivalent to i = i + 1), one comparison (i < 10)
-            operationCount += 3;
             digitRowCounts[i] = 0;
-
-            // one array indexing, one assignment
-            operationCount += 2;
         }
-        // one extra comparison (10 < 10)
-        operationCount += 1;
     }
 
     /**
@@ -67,44 +56,11 @@ public class Algorithm1 {
      * @param array the 2D array to clear, (Setting all elements in the digit row from 0-9 to null)
     */
     private static void clearArray(Integer[][] array) {
-        
-        // one assignmnet (int i = 0)
-        operationCount += 1;
         for (int i = 0; i < array2.length; i++) { // outer loop, loop through 10 digit row (0-9)
-            /** 
-             * one addition, one assignment (i++ also equivalent to i = i + 1) 
-             * one accessing member variable (bucket.length)
-             * one comparison (i < bucket.length)
-            */
-            operationCount += 4;
-
-            // one assignment (int j = 0)
-            operationCount += 1;
-
             for (int j = 0; j < array[i].length; j++) { // inner loop, loop through elements in each digit row
-                /**
-                 * one addition, one assignment (j++ also equivalent to j = j + 1)
-                 * one accessing member variable, one array indexing (bucket[i].length)
-                 * one comparison (j < bucket[i].length)
-                 */
-                operationCount += 5;
                 array[i][j] = null; // setting the elemtents to null
-                
-                // one array indexing, one assignment
-                operationCount += 2;
             }
-            /**
-             * one extra comparison (j < bucket[i].length where j = bucket[i].length)
-             * one array indexing when comparing
-             * one member variable accesing when comparing
-             */
-            operationCount += 3;
         }
-        /**
-         * one extra comparison (i < bucket.length where i = bucket.length)
-         * one member variable accessing when comparing
-        */
-        operationCount += 2;
     }
 
     /**
@@ -114,36 +70,12 @@ public class Algorithm1 {
      * @return the maximum value found in the array
      */
     public static int findLargestValue(int[] array) {
-
-        int max = array[0]; // declare integer max that keep track the maximum value inside the input array
-        
-        // one array indexing (array[0]), one assignment (max = array[0]) 
-        operationCount += 2;
-
-        // one assignment (int i = 0)
-        operationCount += 1;
+        int max = array[0];
         for (int i = 0; i < array.length; i++) { // loop through the input array and find the largest value
-            /**
-             * one addition, one assignment (i++ also equivalent to i = i + 1)
-             * one accessing member variable (array.length)
-             * one comparison (i < array.length)
-            */
-            operationCount += 4;
-
-            // one array indexing (array[i]), one comparison (array[i] > max)
-            operationCount += 2;
             if (array[i] > max) { // if the current number is bigger than the maximum value
                 max = array[i]; // set the maximum value to the current number
-
-                // one array indexing, one assignment
-                operationCount += 2;
             }
         }
-        /**
-         * one extra comparison (i < array.length), where i = array.length
-         * one accessing member variable
-        */
-        operationCount += 2;
         return max;
     }
 
@@ -540,7 +472,6 @@ public class Algorithm1 {
 
             // print the array state after sorted by this digit place
             System.out.println("=== After sorting on digit place " + placeValue + " ===");
-            operationCount += 2;
             displayArray(placeValue);
         }
         // one extra comparison (largestValue / placeValue > 0), one arithmetic operation (division /)
