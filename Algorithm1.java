@@ -14,6 +14,7 @@ public class Algorithm1 {
     private static Integer[][] array1;
     private static Integer[][] array2;
 
+    // 
     private static int[] SortedList;
 
     // Parallel array that keep track the number of elements in each digit row (0-9)
@@ -456,16 +457,24 @@ public class Algorithm1 {
         System.out.println();
     }
 
+    /**
+     * Method used to reorder numbers from the 2D array into a 1D array after the final sorting pass.
+     * It scans the final active sorting array (array1 or array2 depending on maxDigitLength)
+     * and transfers all non-null values into a one-dimensional SortedList array.
+    */
     public static void Reorder() {
-        Integer[][] LastArray = (maxDigitLength % 2 == 0) ? array2 : array1;
+        // Declare LastArray to point to the final sorted array based on maxDigitLength's parity
+        Integer[][] LastArray;
         int totalElements = 0;
 
+        // Choose between array1 and array2, which one is the last sorting pass array depending on whether maxDigitLength is even or odd
         if (maxDigitLength % 2 == 0) {
-            LastArray = array2;
-        } else {
             LastArray = array1;
+        } else {
+            LastArray = array2;
         }
         
+        // Count how many number elements are in LastArray to determine the size of SortedList
         for (int i = 0; i < LastArray.length; i++) {
             for (int j = 0; j < LastArray[i].length; j++) {
                 if (LastArray[i][j] != null) {
@@ -474,8 +483,11 @@ public class Algorithm1 {
             }
         }
 
+        // Initialize the SortedList array with the exact number of non-null elements
         SortedList = new int[totalElements];
         int index = 0;
+
+        // Transfer all the numbers from LastArray into SortedList sequentially
         for (int i = 0; i < LastArray.length; i++) {
             for (int j = 0; j < LastArray[i].length; j++) {
                 if (LastArray[i][j] != null) {
@@ -485,26 +497,61 @@ public class Algorithm1 {
         }
     }
 
+    /**
+     * Methods that display the final sorted list after the sorting algorithm
+     */
     public static void displaySortedList() {
         for (int i = 0; i < SortedList.length; i++) {
             System.out.print(SortedList[i] + " ");
         }
     }
 
+    /** 
+     * Methods use to sort an array of unsorted numbers using radix sort
+     * @param numbers Array of integers to be sorted.
+     */
     public static void Sort(int [] numbers) {
+        
+        // initialize two 2D array instances with numbers.length that is use for sorting
         initializeArray(numbers.length);
+        operationCount += 1; // one method call
+
+        // Find the largest number in the unsorted number array to determine the maximum digit length needed for sorting
         int largestValue = findLargestValue(numbers);
+        operationCount += 2; // one method call, one assignment
+
+        // Calculate how many digit places (maxDigitLength) the sorting needs to process
         calculateMaxDigitLength(largestValue);
+        operationCount += 1; // one method call
 
+        // Loop through each digit place (1s, 10s, 100s, etc.) until no higher place exists
+        operationCount += 1; // one assignment (placeValue = 1)
         for (int placeValue = 1; largestValue / placeValue > 0; placeValue *= 10) {
-            sortingPass(numbers, placeValue);
+            /** 
+             * one addition, one assignment (placeValue *= 10) 
+             * one arithmetic operation (division /)
+             * one comparison (largestValue / placeValue)
+            */
+            operationCount += 4;
 
+            // perform sorting pass based on current placed value
+            sortingPass(numbers, placeValue);
+            operationCount += 1; // one method call
+
+            // print the array state after sorted by this digit place
             System.out.println("=== After sorting on digit place " + placeValue + " ===");
             operationCount += 2;
             displayArray(placeValue);
         }
+        // one extra comparison (largestValue / placeValue > 0), one arithmetic operation (division /)
+        operationCount += 2;
     }
 
+    /**
+     * Methods to determine the length of largest digit given the largest value in the input numbers array
+     * (e.g.: 3141 digit length is 4)
+     * @param largestValue the largest value in the input numbers array
+     */
     private static void calculateMaxDigitLength(int largestValue) {
         if (largestValue == 0) {
             maxDigitLength = 1;
