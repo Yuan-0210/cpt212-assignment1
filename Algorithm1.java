@@ -1,16 +1,20 @@
+
 public class Algorithm1 {
-    private static int counter =0;
-    private static Integer [][] array1;
-    private static Integer [][] array2;
-    private static int [] countArray = new int[10];
+
+    private static int opCount = 0;
+    private static Integer[][] array1;
+    private static Integer[][] array2;
+    private static final int[] countArray = new int[10];
+    private static int[] reorderedArray;
     private static int maxDigit;
 
-    public static void arrayInitialization (int n){
-        array1 = new Integer [10][n];
-        array2 = new Integer [10][n];
+    public static void arrayInitialization(int n) {
+        array1 = new Integer[10][n];
+        array2 = new Integer[10][n];
+        reorderedArray = new int[n];
     }
 
-    private static void countArrayReset () {
+    private static void countArrayReset() {
         for (int i = 0; i < 10; i++) {
             countArray[i] = 0;
         }
@@ -19,86 +23,113 @@ public class Algorithm1 {
     private static void resetArray(Integer[][] array) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
-                array[i][j] = null; // Set each element to null
+                array[i][j] = null;
             }
         }
     }
 
-    // Function to find the maximum number in the array
     public static int findMax(int[] array) {
         int max = array[0];
-        counter+=2; // 1 assign, 1 lookup
-        counter+=1; // 1 assign
         for (int i = 0; i < array.length; i++) {
-            counter+=3; // 1 assign, 1 compare, 1 op
-            counter+=2; // 1 lookup, 1 compare
             if (array[i] > max) {
                 max = array[i];
-                counter+=2; // 1 assign, 1 lookup
             }
         }
-        counter+=1; // 1 return
         return max;
     }
 
-    // The "countingSort()" function to sort the numbers based on the digit
-    // The parameter array[] is the array to be sorted
     private static void sortingAlgorithm(int[] array, int exp) {
         int radix;
         if (exp == 1) {
+            opCount += 1; // 1 comparison
+            opCount += 1; // 1 assignment (for loop)
             for (int i = 0; i < array.length; i++) {
+                opCount += 3; // 1 comparison, 1 post-increment (for loop)
                 radix = (array[i] / exp) % 10;
+                opCount += 4; // 1 assignment, 1 array lookup, 1 division, 1 modulus
                 array1[radix][countArray[radix]] = array[i];
+                opCount += 4; // 3 array lookups, 1 assignment
                 countArray[radix]++;
+                opCount += 3; // 1 array lookup, 1 post-increment
             }
             countArrayReset();
+            opCount += 1; // 1 call a function
         } else if (Math.log10(exp) % 2 == 1) {
-            for (Integer[] row: array1) {
-                for (Integer element: row){
-                    if(element == null)
+            opCount += 3; // 1 call Math function, 1 modulus, 1 comparison
+            opCount += 1; // 1 assignment (outer for loop)
+            for (int i = 0; i < array1.length; i++) {
+                opCount += 3; // 1 comparison, 1 post-increment (outer for loop) 
+                opCount += 1; // 1 assignment (inner for loop)
+                for (int j = 0; j < array1[i].length; j++) {
+                    opCount += 3; // 1 comparison, 1 post-increment (inner for loop)
+                    if (array1[i][j] == null) {
+                        opCount += 2; // 1 array lookup, 1 comparison
                         break;
-                    radix = (element / exp) % 10;
-                    array2[radix][countArray[radix]] = element;
+                    }
+                    radix = (array1[i][j] / exp) % 10;
+                    opCount += 4; // 1 assignment, 1 array lookup, 1 division, 1 modulus
+                    array2[radix][countArray[radix]] = array1[i][j];
+                    opCount += 4; // 3 array lookups, 1 assignment
                     countArray[radix]++;
+                    opCount += 3; // 1 array lookup, 1 post-increment
                 }
             }
-            if (Math.log10(exp) != maxDigit -1)
+            if (Math.log10(exp) != maxDigit - 1) {
+                opCount +=2; // 1 call a function, 1 comparison
                 resetArray(array1);
+                opCount += 1; // 1 call a function
+            }
             countArrayReset();
+            opCount += 1; // 1 call a function
         } else {
-            for (Integer [] row: array2) {
-                for (Integer element: row) {
-                    if (element == null)
+            opCount += 1; // 1 assignment (outer for loop)
+            for (int i = 0; i < array2.length; i++) {
+                opCount += 3; // 1 comparison, 1 post-increment (outer for loop)
+                opCount += 1; // 1 assignment (inner for loop)
+                for (int j = 0; j < array2[i].length; j++) {
+                    opCount += 3; // 1 comparison, 1 post-increment (inner for loop)
+                    if (array2[i][j] == null) {
+                        opCount += 2; // 1 array lookup, 1 comparison
                         break;
-                    radix = (element / exp) % 10;
-                    array1[radix][countArray[radix]] = element;
+                    }
+                    radix = (array2[i][j] / exp) % 10;
+                    opCount += 4; // 1 assignment, 1 array lookup, 1 division, 1 modulus
+                    array1[radix][countArray[radix]] = array2[i][j];
+                    opCount += 4; // 3 array lookups, 1 assignment
                     countArray[radix]++;
+                    opCount += 3; // 1 array lookup, 1 post-increment
                 }
             }
-            if (Math.log10(exp) != maxDigit - 1)
+            if (Math.log10(exp) != maxDigit - 1) {
+                opCount += 2; // 1 call a function, 1 comparison, 1 minus
                 resetArray(array2);
+                opCount += 1; // 1 call a function
+            }
             countArrayReset();
+            opCount += 1; // 1 call a function
         }
     }
 
     public static void display(int exp) {
         if (Math.log10(exp) % 2 == 1) {
-            for (int i = 0; i < array2.length; i++){
+            for (int i = 0; i < array2.length; i++) {
                 System.out.print(i + ": ");
-                for (Integer x: array2[i]) {
-                    if (x == null)
+                for (Integer x : array2[i]) {
+                    if (x == null) {
                         break;
-                    System.out.print(x +" ");
+                    }
+                    System.out.print(x + " ");
                 }
                 System.out.println();
             }
         } else {
-            for (int i = 0; i < array1.length; i++){
+            for (int i = 0; i < array1.length; i++) {
                 System.out.print(i + ": ");
-                for (Integer x: array1[i]) {
-                    if (x == null)
+                for (Integer x : array1[i]) {
+                    if (x == null) {
                         break;
-                    System.out.print(x +" ");
+                    }
+                    System.out.print(x + " ");
                 }
                 System.out.println();
             }
@@ -107,77 +138,69 @@ public class Algorithm1 {
     }
 
     public static void reorder(int maxNumbers) {
+        int counter = 0;
         if (maxDigit % 2 == 0) {
             for (Integer[] row : array2) {
-                for (Integer x : row) {
-                    if (x == null)
+                for (Integer element : row) {
+                    if (element == null) {
                         break;
-                    System.out.print(x + " ");                 
+                    }
+                    reorderedArray[counter++] = element;
                 }
             }
         } else {
             for (Integer[] row : array1) {
-                for (Integer x : row) {
-                    if (x == null)
+                for (Integer element : row) {
+                    if (element == null) {
                         break;
-                    System.out.print(x + " ");                
+                    }
+                    reorderedArray[counter++] = element;
                 }
             }
         }
+
+        for (int i = 0; i < reorderedArray.length; i++) {
+            System.out.print(reorderedArray[i] + " ");
+        }
+
     }
 
     public static void findMaxDigit(int maxNumbers) {
-        if (maxNumbers == 0)
-            maxDigit = 1; 
-        else
-            maxDigit = (int) Math.log10(Math.abs(maxNumbers)) + 1; 
+        if (maxNumbers == 0) {
+            maxDigit = 1;
+        } else {
+            maxDigit = (int) Math.log10(Math.abs(maxNumbers)) + 1;
+        }
     }
 
-    // Main function to implement the algorithm
     public static void main(String[] args) {
 
-        // Example of an array to be sorted
         int[] numbers = {275, 87, 426, 61, 409, 170, 677, 503, 1, 45, 180, 222, 500, 720, 30, 90};
-        counter+=1; // 1 assign
         arrayInitialization(numbers.length);
 
-        // Display the original array
         System.out.println("=== Original array ===");
         System.out.print("Original array: ");
-        counter+=1; // 1 assign
         for (int i = 0; i < numbers.length; i++) {
-            counter+=3; // 1 assign, 1 compare, 1 op
             System.out.print(numbers[i] + " ");
-            counter+=2; // 1 lookup, 1 arithmetic
         }
         System.out.println("\n");
 
-        // Find the maximum number to know the number of digits with the "findMax()" function
         int max = findMax(numbers);
         findMaxDigit(max);
 
-        counter+=2; // 1 assign, 1 call
-
-        // Call "countingSort()" function for each digit place
-        counter+=1; // 1 assign
         for (int exp = 1; max / exp > 0; exp *= 10) {
-            counter+=4; // 1 assign, 2 arithmetic, 1 compare
             sortingAlgorithm(numbers, exp);
-            counter+=2; // 1 assign, 1 call
 
             System.out.println("=== After sorting on digit place " + exp + " ===");
-            counter+=2; // 2 arithmetic
             display(exp);
-            
 
             System.out.println();
         }
 
-        // Display the sorted array in ascending order
         System.out.println("=== Final sorted array ===");
         System.out.print("Reordered array: ");
         reorder(max);
-        System.out.println("\nTotal primitive operations: " + counter);
+        System.out.println("\nTotal primitive operations: " + opCount);
     }
 
 }
