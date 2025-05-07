@@ -104,9 +104,9 @@ public class StringSort {
      * so it can be used for the next sorting pass.
      * 
      * @param array input array contains strings to be sorted.
-     * @param length current character position. For example: 0 for the first character, 1 for the second character, etc.
+     * @param charPosition current character position. For example: 0 for the first character, 1 for the second character, etc.
      */    
-    private static void sortingPass(String[] array, int length) {
+    private static void sortingPass(String[] array, int charPosition) {
         
         /**
          * Stores the current character of a string at the given character position.
@@ -122,7 +122,7 @@ public class StringSort {
          * Sort based on the current character position & moves strings from input array to array1
          */
         operationCount += 2; // one comparison (length == maxStringLength -1), one minus (maxStringLength -1)
-        if (length == maxStringLength -1) {
+        if (charPosition == maxStringLength -1) {
             // one assignment (int i = 0)
             operationCount += 1;
             for (int i = 0; i < array.length; i++) { // Loop through the input number array
@@ -145,8 +145,8 @@ public class StringSort {
                  * one accessing member variable (currentWord.length())
                  */
                 operationCount += 2;
-                if (length < currentWord.length()) {
-                    ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                if (charPosition < currentWord.length()) {
+                    ch = currentWord.charAt(charPosition); // get the current numbers digit based on the placeValue
                     /**
                      * one accessing member variable (currentWord.charAt(length))
                      * one assignment (ch = currentWord.charAt(length))
@@ -199,7 +199,7 @@ public class StringSort {
          * Sort based on the current character position
          * Moves numbers from array1 to array2
          */
-        else if (((maxStringLength % 2 == 0) && (length % 2 == 0)) || ((maxStringLength % 2 == 1) && (length % 2 == 1))) {
+        else if (((maxStringLength % 2 == 0) && (charPosition % 2 == 0)) || ((maxStringLength % 2 == 1) && (charPosition % 2 == 1))) {
             /**
              * 7 comparisons:
              * - maxStringLength % 2 == 0
@@ -250,8 +250,8 @@ public class StringSort {
                      * one accessing member variable (currentWord.length())
                      */
                     operationCount += 2;
-                    if (length < currentWord.length()) {
-                        ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                    if (charPosition < currentWord.length()) {
+                        ch = currentWord.charAt(charPosition); // get the current numbers digit based on the placeValue
                         /**
                          * one accessing member variable (currentWord.charAt(length))
                          * one assignment (ch = currentWord.charAt(length))
@@ -362,8 +362,8 @@ public class StringSort {
                      * one accessing member variable (currentWord.length())
                      */
                     operationCount += 2;
-                    if (length < currentWord.length()) {
-                        ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                    if (charPosition < currentWord.length()) {
+                        ch = currentWord.charAt(charPosition); // get the current numbers digit based on the placeValue
                         /**
                          * one accessing member variable (currentWord.charAt(length))
                          * one assignment (ch = currentWord.charAt(length))
@@ -427,16 +427,16 @@ public class StringSort {
      * - If the maximum string length is even and the current character position is odd or vice versa, it displays array1.
      * - Else, it displays array2.
      *
-     * @param length the current character position based on which sorting pass is happening
+     * @param charPosition the current character position based on which sorting pass is happening
      * 
      * - Chooses the active 2D array (either array1 or array2) depending on whether the maximum string length is even and the current character position is odd or vice versa.
      * - Iterates over each character row (a-z and one null row) and prints the strings stored in it, stopping at null (empty spots, means there is no more strings left behind).
     */
-    public static void displayArray(int length) {
+    public static void displayArray(int charPosition) {
         String[][] activeArray;
 
         // If the maximum string length is even and the current character position is odd or vice versa, use array1; otherwise, use array2.
-        if (((maxStringLength % 2 == 0) && (length % 2 == 1)) || ((maxStringLength % 2 == 1) && (length % 2 == 0))) {
+        if (((maxStringLength % 2 == 0) && (charPosition % 2 == 1)) || ((maxStringLength % 2 == 1) && (charPosition % 2 == 0))) {
             activeArray = array1;
         } else {
             activeArray = array2;
@@ -516,18 +516,18 @@ public class StringSort {
         operationCount += 1; // one method call (initializeArray(words.length))
 
         // Find the longest string in the unsorted number array to determine the maximum string length needed for sorting
-        String largestValue = findLongestString(words);
+        String longestString = findLongestString(words);
         /*
          * one method call (findLongestString(words))
-         * one assignment (largestValue = findLongestString(words))
+         * one assignment (longestString = findLongestString(words))
          */
         operationCount += 2; 
 
         // Get the maximum string length of the longest string found in the array
-        maxStringLength = largestValue.length();
+        maxStringLength = longestString.length();
         /**
-         * one assignment (maxStringLength = largestValue.length())
-         * one accessing member variable (largestValue.length())
+         * one assignment (maxStringLength = longestString.length())
+         * one accessing member variable (longestString.length())
         */
         operationCount += 2;
 
@@ -538,7 +538,7 @@ public class StringSort {
          // Loop through each character position until charcter position is less than 0
          // One assignment (int length = maxStringLength - 1)
          operationCount += 1;
-        for (int length = maxStringLength - 1; length >= 0; length--) {
+        for (int charPosition = maxStringLength - 1; charPosition >= 0; charPosition--) {
             /*
              * one comparison (length >= 0)
              * one minus and one assignment (length--)
@@ -546,12 +546,12 @@ public class StringSort {
             operationCount += 3;
 
             // Perform sorting pass based on current character position
-            sortingPass(words, length);
+            sortingPass(words, charPosition);
             operationCount += 1; // one method call
 
             // Print the array state after sorted by the current character position
             System.out.println("=== After sorting  " + passCount + " ===");
-            displayArray(length);
+            displayArray(charPosition);
             passCount++;
         }
         // One extra comparison (length >= 0) where length = -1, reached the end of the loop
