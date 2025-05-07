@@ -150,7 +150,7 @@ public class Algorithm2 {
             "y", "ac", "zb", "lo", "ir", "ps", "fv", "cw",
             "du", "vc", "na", "lg", "kp", "jy", "fz", "wb",
             "bd", "it", "ja", "mx", "pu", "qe", "rh", "sz",
-            "lx", "zv", "fy", "sb", "ca", "tw", "kh", "ae"
+            "lx", "zv", "fy", "sb", "ca", "tw", "kh", "ae", "baptise"
           }
           
           

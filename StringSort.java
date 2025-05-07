@@ -1,4 +1,4 @@
-public class Algorithm1 {
+public class StringSort {
 
     // Counter to track the primitive operations
     private static int operationCount = 0;
@@ -11,14 +11,14 @@ public class Algorithm1 {
      * We use Integer (object) instead of int (primitive) so we can set unused elements to null.
      * This avoids confusion in cases where the input array might contain actual zero values that is needed to sort.
     */
-    private static Integer[][] array1;
-    private static Integer[][] array2;
+    private static String[][] array1;
+    private static String[][] array2;
 
     // 
-    private static int[] SortedList;
+    private static String[] SortedList;
 
     // Parallel array that keep track the number of elements in each digit row (0-9)
-    private static int[] digitRowCounts = new int[10];
+    private static int[] charRowCounts;
 
     // Store the largest number's digit length
     private static int maxStringLength;
@@ -36,16 +36,17 @@ public class Algorithm1 {
      * @param size the number of elements in the input array
     */
     public static void initializeArray(int size) {
-        array1 = new Integer[10][size]; 
-        array2 = new Integer[10][size]; 
+        array1 = new String[27][size]; 
+        array2 = new String[27][size]; 
+        charRowCounts = new int[27];
     }
 
     /**
      *  Reset the count of elements in each digit row to zero before the next sorting pass
     */
     private static void resetCharRowCounts() {
-        for (int i = 0; i < 10; i++) {
-            digitRowCounts[i] = 0;
+        for (int i = 0; i < 27; i++) {
+            charRowCounts[i] = 0;
         }
     }
 
@@ -55,7 +56,7 @@ public class Algorithm1 {
      * This ensures the digit row is empty and ready for the next sorting pass.
      * @param array the 2D array to clear, (Setting all elements in the digit row from 0-9 to null)
     */
-    private static void clearArray(Integer[][] array) {
+    private static void clearArray(String[][] array) {
         for (int i = 0; i < array.length; i++) { // outer loop, loop through 10 digit row (0-9)
             for (int j = 0; j < array[i].length; j++) { // inner loop, loop through elements in each digit row
                 array[i][j] = null; // setting the elemtents to null
@@ -69,11 +70,11 @@ public class Algorithm1 {
      * @param array given input array that is needed to be sort
      * @return the maximum value found in the array
      */
-    public static int findLargestValue(int[] array) {
-        int max = array[0];
-        for (int i = 0; i < array.length; i++) { // loop through the input array and find the largest value
-            if (array[i] > max) { // if the current number is bigger than the maximum value
-                max = array[i]; // set the maximum value to the current number
+    public static String findLongestString(String[] words) {
+        String max = words[0];
+        for (int i = 0; i < words.length; i++) { // loop through the input array and find the largest value
+            if (words[i].length() > max.length()) { // if the current number is bigger than the maximum value
+                max = words[i]; // set the maximum value to the current number
             }
         }
         return max;
@@ -102,14 +103,15 @@ public class Algorithm1 {
      * @param array input array contains numbers to be sort, only used for the first sorting pass
      * @param placeValue current place value (1, 10, 100, 1000 etc.)
      */    
-    private static void sortingPass(int[] array, int placeValue) {
+    private static void sortingPass(String[] array, int length) {
         
         /**
          * Stores the current digit of a number at the given place value.
          * For example: if placeValue == 10, we're sorting by the tens place.
          * If the number is 30, then digit = 3.
         */
-        int digit;
+        char ch;
+        int index;
 
         /**
          * First if statement
@@ -117,8 +119,7 @@ public class Algorithm1 {
          * Sort based on the current place value & moves numbers from input array to array1
          */
         operationCount += 1; // one comparison (placeValue == 1)
-        if (placeValue == 1) {
-
+        if (length == maxStringLength -1) {
             // one assignment (int i = 0)
             operationCount += 1;
             for (int i = 0; i < array.length; i++) { // Loop through the input number array
@@ -128,23 +129,20 @@ public class Algorithm1 {
                  * one comparison (i < array.length) 
                 */
                 operationCount += 4;
-
-                int currentNumber = array[i];
+                String currentWord = array[i];
 
                 /**
                  * one array indexing (array[i])
                  * one assignment (to currentNumber)
                 */
                 operationCount += 2;
-                digit = (currentNumber / placeValue) % 10; // get the current numbers digit based on the placeValue
+                if (length < currentWord.length()) {
+                    ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                    index = ch - 'a' + 1;
+                } else 
+                    index = 0;
+                array1[index][charRowCounts[index]] = currentWord;
 
-                /**
-                 * one division (/)
-                 * one modulo (%)
-                 * one assignment (to digit)
-                 */
-                operationCount += 3;
-                array1[digit][digitRowCounts[digit]] = currentNumber; // assign the current number to the correct digit row
 
                 /**
                  * three array indexing:
@@ -154,7 +152,7 @@ public class Algorithm1 {
                  * one assignment (store number into digit row)
                  */
                 operationCount += 4;
-                digitRowCounts[digit]++; // increment the counts of element in that row
+                charRowCounts[index]++; // increment the counts of element in that row
 
                 /**
                  * equivalent to (digitRowCounts[digit] = digitRowCounts[digit] + 1)
@@ -164,6 +162,7 @@ public class Algorithm1 {
                 */
                 operationCount += 4;
             }
+
             /**
              * one extra comparison (i < array.length) where i = array.length
              * one accessing member variable (array.length)
@@ -180,7 +179,7 @@ public class Algorithm1 {
          * Sort based on the current placeValue
          * Moves numbers from array1 to array2
          */
-        else if (Math.log10(placeValue) % 2 == 1) {
+        else if (((maxStringLength % 2 == 0) && (length % 2 == 0)) || ((maxStringLength % 2 == 1) && (length % 2 == 1))) {
             /**
              * one method call (log10())
              * one modulo (%)
@@ -209,25 +208,22 @@ public class Algorithm1 {
                     */
                     operationCount += 5;
 
-                    Integer currentNumber = array1[i][j];
+                    String currentWord = array1[i][j];
                     /**
                      * two array indexing (array1[i][j])
                      * one assignment (to currentNumber)
                      */
                     operationCount += 3;
-                    if (currentNumber == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
+                    if (currentWord == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
                     
                     // one comparison
                     operationCount += 1;
-                    digit = (currentNumber / placeValue) % 10; // get the current numbers digit based on the placeValue
-                    /**
-                     * one division (/)
-                     * one modulo (%)
-                     * one assignment (to digit)
-                    */
-                    operationCount += 3;
-                    array2[digit][digitRowCounts[digit]] = currentNumber; // assign the current number to the correct digit row
-
+                    if (length < currentWord.length()) {
+                        ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                        index = ch - 'a' + 1;
+                    } else 
+                        index = 0;
+                    array2[index][charRowCounts[index]] = currentWord;
                     /**
                      * three array indexing:
                      * - array2[digit]
@@ -236,7 +232,7 @@ public class Algorithm1 {
                      * one assignment (store number into digit row)
                      */
                     operationCount += 4;
-                    digitRowCounts[digit]++; // increment the counts of element in that row
+                    charRowCounts[index]++; // increment the counts of element in that row
 
                     /**
                      * equivalent to (digitRowCounts[digit] = digitRowCounts[digit] + 1)
@@ -301,24 +297,23 @@ public class Algorithm1 {
                     */
                     operationCount += 5;
 
-                    Integer currentNumber = array2[i][j];
+                    String currentWord = array2[i][j];
                     /**
                      * two array indexing (array2[i][j])
                      * one assignment (to currentNumber)
                      */
                     operationCount += 3;
-                    if (currentNumber == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
+                    if (currentWord == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
                     
                     // one comparison
                     operationCount += 1;
-                    digit = (currentNumber / placeValue) % 10; // get the current numbers digit based on the placeValue
-                    /**
-                     * one division (/)
-                     * one modulo (%)
-                     * one assignment (to digit)
-                    */
-                    operationCount += 3;
-                    array1[digit][digitRowCounts[digit]] = currentNumber; // assign the current number to the correct digit row
+                    if (length < currentWord.length()) {
+                        ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                        index = ch - 'a' + 1;
+                    } else 
+                        index = 0;
+                    array1[index][charRowCounts[index]] = currentWord;// get the current numbers digit based on the placeValue
+
 
                     /**
                      * three array indexing:
@@ -328,7 +323,7 @@ public class Algorithm1 {
                      * one assignment (store number into digit row)
                      */
                     operationCount += 4;
-                    digitRowCounts[digit]++; // increment the counts of element in that row
+                    charRowCounts[index]++; // increment the counts of element in that row
 
                     /**
                      * equivalent to (digitRowCounts[digit] = digitRowCounts[digit] + 1)
@@ -363,23 +358,26 @@ public class Algorithm1 {
      * The method determines which bucket array (array1 or array2) to display based on whether the place value 
      * corresponds to an odd or even digit pass.
      *
-     * @param placeValue the current place value (1, 10, 100, etc.) based on which sorting pass is happening
+     * @param length the current place value (1, 10, 100, etc.) based on which sorting pass is happening
      * 
      * - Chooses the active 2D array (either array1 or array2) depending on whether the current place value is odd or even.
      * - Iterates over each digit row (0-9) and prints the numbers stored in in, stopping at null (empty spots, means there is no more numbers left behind).
     */
-    public static void displayArray(int placeValue) {
-        Integer[][] activeArray;
+    public static void displayArray(int length) {
+        String[][] activeArray;
 
         // if it is odd pass, the active array is array2, else it is array1
-        if (Math.log10(placeValue) % 2 == 1) {
-            activeArray = array2;
-        } else {
+        if (((maxStringLength % 2 == 0) && (length % 2 == 1)) || ((maxStringLength % 2 == 1) && (length % 2 == 0))) {
             activeArray = array1;
+        } else {
+            activeArray = array2;
         }
 
         for (int i = 0; i < activeArray.length; i++) { // Outer loop, loop through 10 digit row of active array
-            System.out.print(i + ": ");
+            int ch;
+            if (i == 0) ch = 32;
+            else ch = i + 64;
+            System.out.print(((char) ch) + ": ");
             for (int j = 0; j < activeArray[i].length; j++) { // Inner loop, loop through every numbers contain in that digit row
                 if (activeArray[i][j] == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
                 System.out.print(activeArray[i][j] + " "); // display the number in the digit row
@@ -396,14 +394,14 @@ public class Algorithm1 {
     */
     public static void Reorder() {
         // Declare LastArray to point to the final sorted array based on maxStringLength's parity
-        Integer[][] LastArray;
+        String[][] LastArray;
         int totalElements = 0;
 
         // Choose between array1 and array2, which one is the last sorting pass array depending on whether maxStringLength is even or odd
         if (maxStringLength % 2 == 0) {
-            LastArray = array1;
-        } else {
             LastArray = array2;
+        } else {
+            LastArray = array1;
         }
         
         // Count how many number elements are in LastArray to determine the size of SortedList
@@ -416,7 +414,7 @@ public class Algorithm1 {
         }
 
         // Initialize the SortedList array with the exact number of non-null elements
-        SortedList = new int[totalElements];
+        SortedList = new String[totalElements];
         int index = 0;
 
         // Transfer all the numbers from LastArray into SortedList sequentially
@@ -442,23 +440,24 @@ public class Algorithm1 {
      * Methods use to sort an array of unsorted numbers using radix sort
      * @param numbers Array of integers to be sorted.
      */
-    public static void Sort(int [] numbers) {
+    public static void Sort(String[] words) {
         
         // initialize two 2D array instances with numbers.length that is use for sorting
-        initializeArray(numbers.length);
+        initializeArray(words.length);
         operationCount += 1; // one method call
 
         // Find the largest number in the unsorted number array to determine the maximum digit length needed for sorting
-        int largestValue = findLargestValue(numbers);
+        String largestValue = findLongestString(words);
         operationCount += 2; // one method call, one assignment
 
         // Calculate how many digit places (maxStringLength) the sorting needs to process
-        calculatemaxStringLength(largestValue);
+        maxStringLength = largestValue.length();
         operationCount += 1; // one method call
 
+        int passCount = 1;
         // Loop through each digit place (1s, 10s, 100s, etc.) until no higher place exists
         operationCount += 1; // one assignment (placeValue = 1)
-        for (int placeValue = 1; largestValue / placeValue > 0; placeValue *= 10) {
+        for (int length = maxStringLength - 1; length >= 0; length--) {
             /** 
              * one addition, one assignment (placeValue *= 10) 
              * one arithmetic operation (division /)
@@ -467,45 +466,36 @@ public class Algorithm1 {
             operationCount += 4;
 
             // perform sorting pass based on current placed value
-            sortingPass(numbers, placeValue);
+            sortingPass(words, length);
             operationCount += 1; // one method call
 
             // print the array state after sorted by this digit place
-            System.out.println("=== After sorting on digit place " + placeValue + " ===");
-            displayArray(placeValue);
+            System.out.println("=== After sorting  " + passCount + " ===");
+            displayArray(length);
+            passCount++;
         }
         // one extra comparison (largestValue / placeValue > 0), one arithmetic operation (division /)
         operationCount += 2;
     }
 
-    /**
-     * Methods to determine the length of largest digit given the largest value in the input numbers array
-     * (e.g.: 3141 digit length is 4)
-     * @param largestValue the largest value in the input numbers array
-     */
-    private static void calculatemaxStringLength(int largestValue) {
-        if (largestValue == 0) {
-            maxStringLength = 1;
-        } else {
-            maxStringLength = (int) Math.log10(Math.abs(largestValue) + 1);
-        }
-    }
-
     public static void main(String[] args) {
 
         // number array to sort
-        int[] numbers = {275, 87, 426, 61, 409, 170, 677, 8910, 2182, 45, 180, 222, 500, 720, 30, 90};
+        String[] words = {"apple", "aeroplan", "bat", "baby", "cherry", "zebra", "ape", "lizard", "bird", 
+                            "eagle", "elephant", "giraffe", "deer", "lion", "tiger", "kill", "first",
+                            "dragon", "hat", "whale", "beef", "house", "yatch", "xylem", "blood",
+                            "pop", "push", "oil", "man", "red", "quartz", "dance", "juice", "orange"};
 
         // display the initial array of numbers
         System.out.println("=== Initial array ===");
         System.out.print("Initial array: ");
-        for (int num : numbers) {
-            System.out.print(num + " ");
+        for (String word : words) {
+            System.out.print(word + " ");
         }
         System.out.println("\n");
 
         // pass the array to the Sorting algorithm methods
-        Sort(numbers);
+        Sort(words);
 
         // Reorder after sorting
         Reorder();
