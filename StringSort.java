@@ -5,33 +5,32 @@ public class StringSort {
 
     /**
      * Two 2D arrays used for sorting
-     *  - Each row represents a digit (0-9)
-     *  - Each column holds numbers assigned to that digit during sorting.
+     *  - Each row represents a alphabet and one more extra row for null values.
+     *  - Each column holds string assigned to that alphabet during sorting.
      *
-     * We use Integer (object) instead of int (primitive) so we can set unused elements to null.
-     * This avoids confusion in cases where the input array might contain actual zero values that is needed to sort.
+     * We use String as we are sorting string values.
     */
     private static String[][] array1;
     private static String[][] array2;
 
-    // 
+    // Parallel array that stores the reordered sorted strings
     private static String[] SortedList;
 
-    // Parallel array that keep track the number of elements in each digit row (0-9)
+    // Parallel array that keep track the number of elements in each character row (a-z and one null row))
     private static int[] charRowCounts;
 
-    // Store the largest number's digit length
+    // Store the maximum string length in the input array
     private static int maxStringLength;
 
     /**
-     * Initializes two 2D arrays (array1 and array2) with 10 rows 
-     * for digits 0–9 and 'size' columns (based on the number of elements to sort).
+     * Initializes two 2D arrays (array1 and array2) with 27 rows 
+     * for alphabet a-z and one null row and 'size' columns (based on the number of elements to sort).
      *
-     * Worst case: all numbers could go into the same digit row , 
+     * Worst case: all strings could go into the same character row , 
      * so each row needs 'size' slots to avoid overflow.
      *
-     * Example: for input {23, 45, 12, 99, 5} (5 numbers)
-     * → creates array1 and array2 of size [10][5].
+     * Example: for input {"apple", "bird", "cat", "elephant", "dog"} (5 strings)
+     * → creates array1 and array2 of size [27][5].
      *
      * @param size the number of elements in the input array
     */
@@ -42,7 +41,7 @@ public class StringSort {
     }
 
     /**
-     *  Reset the count of elements in each digit row to zero before the next sorting pass
+     *  Reset the count of elements in each character row to zero before the next sorting pass
     */
     private static void resetCharRowCounts() {
         for (int i = 0; i < 27; i++) {
@@ -51,74 +50,78 @@ public class StringSort {
     }
 
     /**
-     * Clear all numbers in the given 2D array by setting them to NULL.
+     * Clear all strings in the given 2D array by setting them to NULL.
      * 
-     * This ensures the digit row is empty and ready for the next sorting pass.
-     * @param array the 2D array to clear, (Setting all elements in the digit row from 0-9 to null)
+     * This ensures the character row is empty and ready for the next sorting pass.
+     * @param array the 2D array to be cleared, (Setting all elements in the character row to null)
     */
     private static void clearArray(String[][] array) {
-        for (int i = 0; i < array.length; i++) { // outer loop, loop through 10 digit row (0-9)
-            for (int j = 0; j < array[i].length; j++) { // inner loop, loop through elements in each digit row
+        for (int i = 0; i < array.length; i++) { // outer loop, loop through 26 alphabet (a-z) and one null row
+            for (int j = 0; j < array[i].length; j++) { // inner loop, loop through elements in each character row
                 array[i][j] = null; // setting the elemtents to null
             }
         }
     }
 
     /**
-     * Finds and returns the maximum value in the given input array
+     * Finds and returns the longest string in the given input array
      *  
-     * @param array given input array that is needed to be sort
-     * @return the maximum value found in the array
+     * @param words given input array that is needed to be sort
+     * @return the longest string found in the array
      */
     public static String findLongestString(String[] words) {
         String max = words[0];
-        for (int i = 0; i < words.length; i++) { // loop through the input array and find the largest value
-            if (words[i].length() > max.length()) { // if the current number is bigger than the maximum value
-                max = words[i]; // set the maximum value to the current number
+        for (int i = 0; i < words.length; i++) { // loop through the input array and find the longest string
+            if (words[i].length() > max.length()) { // if the current string is longger than the longest string
+                max = words[i]; // set the current string as the longest string
             }
         }
         return max;
     }
 
     /**
-     * Distributes numbers into the appropriate digit row based on the current digit place value.
+     * Distributes strings into the appropriate character row based on the current alphabet place value.
      * 
-     * This method handles the core step of radix sort, where numbers are sort by 
-     * their digit values (0-9) at a given place value (1, 10, 100, 1000 etc.)
+     * This method handles the core step of radix sort, where strings are sorted by 
+     * their alphabet values (a-z) at a character position (length).
      * 
-     * Depending on whether we're sorting on the first pass (placeValue == 1),
-     * or alternating between array1 and array2 on subsequent passes, numbers are
-     * distributed into the correct digit row inside a 2D array
+     * Depending on whether we're sorting on the first pass (length == maxStringLength - 1),
+     * or alternating between array1 and array2 on subsequent passes, strings are
+     * distributed into the correct character row inside a 2D array
      *
-     * On the first pass (placeValue == 1), numbers from the input array are placed in array1.
-     * On odd passes (log10(placeValue) % 2 == 1), numbers from array1 are moved to array2.
-     * On even passes (log10(placeValue) % 2 == 0), numbers from array2 are moved to array1. 
+     * On the first pass (length == maxStringLength - 1), strings from the input array are placed in array1.
+     * When the maximum length of string and the current character position is odd or even 
+     * ((maxStringLength % 2 == 0) && (length % 2 == 0)) || ((maxStringLength % 2 == 1) && (length % 2 == 1)), 
+     * strings from array1 are moved to array2.
+     * When the maximum length of string is odd and the current character position is even, or vice versa
+     * ((maxStringLength % 2 == 0) && (length % 2 == 1)) || ((maxStringLength % 2 == 1) && (length % 2 == 0)),
+     * strings from array2 are moved to array1. 
      * and so on
      * 
      * The purpose of using this method is to reduce the replication of array, more memory efficient
      * 
-     * After distributing, parallel digit row counts & previous array is reset, 
+     * After distributing, parallel character row counts & previous array is reset, 
      * so it can be used for the next sorting pass.
      * 
-     * @param array input array contains numbers to be sort, only used for the first sorting pass
-     * @param placeValue current place value (1, 10, 100, 1000 etc.)
+     * @param array input array contains strings to be sorted.
+     * @param length current character position. For example: 0 for the first character, 1 for the second character, etc.
      */    
     private static void sortingPass(String[] array, int length) {
         
         /**
-         * Stores the current digit of a number at the given place value.
-         * For example: if placeValue == 10, we're sorting by the tens place.
-         * If the number is 30, then digit = 3.
+         * Stores the current character of a string at the given character position.
+         * For example: if length == 0, we're sorting by the first character of the string.
+         * If the string is 'apple', then character = 'a'.
         */
         char ch;
         int index;
 
         /**
          * First if statement
-         * On the first pass where placeValue == 1
-         * Sort based on the current place value & moves numbers from input array to array1
+         * On the first pass where length == maxStringLength -1
+         * Sort based on the current character position & moves strings from input array to array1
          */
-        operationCount += 1; // one comparison (placeValue == 1)
+        operationCount += 2; // one comparison (length == maxStringLength -1), one minus (maxStringLength -1)
         if (length == maxStringLength -1) {
             // one assignment (int i = 0)
             operationCount += 1;
@@ -136,27 +139,44 @@ public class StringSort {
                  * one assignment (to currentNumber)
                 */
                 operationCount += 2;
+
+                /**
+                 * one comparison (length < currentWord.length())
+                 * one accessing member variable (currentWord.length())
+                 */
+                operationCount += 2;
                 if (length < currentWord.length()) {
                     ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                    /**
+                     * one accessing member variable (currentWord.charAt(length))
+                     * one assignment (ch = currentWord.charAt(length))
+                    */
+                    operationCount += 2;
                     index = ch - 'a' + 1;
-                } else 
+                    /**
+                     * one addtion and one minus (ch - 'a' + 1)
+                     * one assignment (index = ch - 'a' + 1)
+                     */
+                    operationCount += 3;
+                } else {
                     index = 0;
+                    operationCount += 1; // one assignment (index = 0)
+                }
+                    
                 array1[index][charRowCounts[index]] = currentWord;
-
-
-                /**
+                 /**
                  * three array indexing:
-                 * - array1[digit]
-                 * - array1[digit][digitRowCounts[digit]]
-                 * - digitRowCounts[digit]
-                 * one assignment (store number into digit row)
+                 * - array1[index]
+                 * - array1[index][charRowCounts[index]]
+                 * - charRowCounts[index]
+                 * one assignment (store string into character row)
                  */
                 operationCount += 4;
-                charRowCounts[index]++; // increment the counts of element in that row
 
+                charRowCounts[index]++; 
                 /**
-                 * equivalent to (digitRowCounts[digit] = digitRowCounts[digit] + 1)
-                 * two array indexing (digitRowCounts[digit])
+                 * equivalent to (charRowCounts[digit] = charRowCounts[digit] + 1)
+                 * two array indexing (charRowCounts[digit])
                  * one addition (increment by 1)
                  * one assignment (store the incremented value back)
                 */
@@ -175,21 +195,27 @@ public class StringSort {
         } 
 
         /**
-         * Executes during odd passes (when placeValue is 10, 1000, 100000, etc.)
-         * Sort based on the current placeValue
+         * Executes when the maximum length of string and the current character position is odd or even
+         * Sort based on the current character position
          * Moves numbers from array1 to array2
          */
         else if (((maxStringLength % 2 == 0) && (length % 2 == 0)) || ((maxStringLength % 2 == 1) && (length % 2 == 1))) {
             /**
-             * one method call (log10())
-             * one modulo (%)
-             * one comparison
+             * 7 comparisons:
+             * - maxStringLength % 2 == 0
+             * - length % 2 == 0
+             * - maxStringLength % 2 == 1
+             * - length % 2 == 1
+             * - (maxStringLength % 2 == 0) && (length % 2 == 0)
+             * - (maxStringLength % 2 == 1) && (length % 2 == 1)
+             * - ((maxStringLength % 2 == 0) && (length % 2 == 0)) || ((maxStringLength % 2 == 1) && (length % 2 == 1))
+             * four modulo (%)
              */
-            operationCount += 3;
+            operationCount += 11;
 
             // one assignment (int i = 0)
             operationCount += 1;
-            for (int i = 0; i < array1.length; i++) { // Outer loop, loop through 10 digit rows of array1
+            for (int i = 0; i < array1.length; i++) { // Outer loop, loop through 27 character rows of array1
                 /**
                  * one addition, one assignment (i ++ also equivalent to i = i + 1)
                  * one accessing member variable (array1.length)
@@ -214,29 +240,49 @@ public class StringSort {
                      * one assignment (to currentNumber)
                      */
                     operationCount += 3;
+
+                    // one comparison (currentWord == null)
+                    operationCount += 1;
                     if (currentWord == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
                     
-                    // one comparison
-                    operationCount += 1;
+                    /**
+                     * one comparison (length < currentWord.length())
+                     * one accessing member variable (currentWord.length())
+                     */
+                    operationCount += 2;
                     if (length < currentWord.length()) {
                         ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                        /**
+                         * one accessing member variable (currentWord.charAt(length))
+                         * one assignment (ch = currentWord.charAt(length))
+                         */
+                        operationCount += 2;
+
                         index = ch - 'a' + 1;
-                    } else 
+                        /**
+                         * one addtion and one minus (ch - 'a' + 1)
+                         * one assignment (index = ch - 'a' + 1)
+                         */
+                        operationCount += 3;
+                    } else {
                         index = 0;
+                        // one assignment (index = 0)
+                        operationCount += 1; 
+                    }
                     array2[index][charRowCounts[index]] = currentWord;
                     /**
                      * three array indexing:
-                     * - array2[digit]
-                     * - array2[digit][digitRowCounts[digit]]
-                     * - digitRowCounts[digit]
-                     * one assignment (store number into digit row)
+                     * - array2[index]
+                     * - array2[index][charRowCounts[index]]
+                     * - charRowCounts[index]
+                     * one assignment (store string into character row)
                      */
                     operationCount += 4;
-                    charRowCounts[index]++; // increment the counts of element in that row
 
+                    charRowCounts[index]++; // increment the counts of element in that row
                     /**
-                     * equivalent to (digitRowCounts[digit] = digitRowCounts[digit] + 1)
-                     * two array indexing (digitRowCounts[digit])
+                     * equivalent to (charRowCounts[digit] = charRowCounts[digit] + 1)
+                     * two array indexing (charRowCounts[digit])
                      * one addition (increment by 1)
                      * one assignment (store the incremented value back)
                     */
@@ -261,20 +307,23 @@ public class StringSort {
             operationCount += 2;
         } 
         /**
-         * Executes during even passes (when placeValue is 100, 10000, 1000000, etc.)
-         * Sort based on the current placeValue
+         * Executes when the maximum length of string is odd and the current character position is even, or vice versa
+         * Sort based on the current character position
          * Moves numbers from array2 to array1
         */  
         else {
             /**
-             * If the code reaches here, it means the condition in the previous 'else if' was false.
-             * Increase operations involved in the evaluation of the 'else if' condition:
-             * 
-             * one method call (log10())
-             * one modulo (%)
-             * one comparison
-            */
-            operationCount += 3;
+             * 7 comparisons:
+             * - maxStringLength % 2 == 0
+             * - length % 2 == 0
+             * - maxStringLength % 2 == 1
+             * - length % 2 == 1
+             * - (maxStringLength % 2 == 0) && (length % 2 == 0)
+             * - (maxStringLength % 2 == 1) && (length % 2 == 1)
+             * - ((maxStringLength % 2 == 0) && (length % 2 == 0)) || ((maxStringLength % 2 == 1) && (length % 2 == 1))
+             * four modulo (%)
+             */
+            operationCount += 11;
 
             // one assignement (int i = 0)
             operationCount += 1;
@@ -303,38 +352,57 @@ public class StringSort {
                      * one assignment (to currentNumber)
                      */
                     operationCount += 3;
+
+                    // one comparison (currentWord == null)
+                    operationCount += 1;
                     if (currentWord == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
                     
-                    // one comparison
-                    operationCount += 1;
+                    /**
+                     * one comparison (length < currentWord.length())
+                     * one accessing member variable (currentWord.length())
+                     */
+                    operationCount += 2;
                     if (length < currentWord.length()) {
                         ch = currentWord.charAt(length); // get the current numbers digit based on the placeValue
+                        /**
+                         * one accessing member variable (currentWord.charAt(length))
+                         * one assignment (ch = currentWord.charAt(length))
+                         */
+                        operationCount += 2;
+
                         index = ch - 'a' + 1;
-                    } else 
+                        /**
+                         * one addtion and one minus (ch - 'a' + 1)
+                         * one assignment (index = ch - 'a' + 1)
+                         */
+                        operationCount += 3;
+                    } else {
                         index = 0;
+                        // one assignment (index = 0)
+                        operationCount += 1;
+                    }
+
                     array1[index][charRowCounts[index]] = currentWord;// get the current numbers digit based on the placeValue
-
-
                     /**
                      * three array indexing:
-                     * - array1[digit]
-                     * - array1[digit][digitRowCounts[digit]]
-                     * - digitRowCounts[digit]
-                     * one assignment (store number into digit row)
+                     * - array1[index]
+                     * - array1[index][charRowCounts[index]]
+                     * - charRowCounts[index]
+                     * one assignment (store string into character row)
                      */
                     operationCount += 4;
-                    charRowCounts[index]++; // increment the counts of element in that row
 
+                    charRowCounts[index]++; // increment the counts of element in that row
                     /**
-                     * equivalent to (digitRowCounts[digit] = digitRowCounts[digit] + 1)
-                     * two array indexing (digitRowCounts[digit])
+                     * equivalent to (charRowCounts[digit] = charRowCounts[digit] + 1)
+                     * two array indexing (charRowCounts[digit])
                      * one addition (increment by 1)
                      * one assignment (store the incremented value back)
                     */
                     operationCount += 4;
                 }
                 /**
-                 * one extra comparison (j < array2[i].length) where j = array2[i].length, reached end of digit rows
+                 * one extra comparison (j < array2[i].length) where j = array2[i].length, reached end of character rows
                  * one accessing member variable (array1[i].length)
                  * one array indexing (array1[i])
                 */
@@ -354,33 +422,34 @@ public class StringSort {
     }
 
     /**
-     * Displays the current state of the digit rows during the sorting pass based on the given placeValue.
-     * The method determines which bucket array (array1 or array2) to display based on whether the place value 
-     * corresponds to an odd or even digit pass.
+     * Displays the current state of the character rows during the sorting pass based on the given character position.
+     * The method determines which bucket array (array1 or array2) to display based on the two conditions:
+     * - If the maximum string length is even and the current character position is odd or vice versa, it displays array1.
+     * - Else, it displays array2.
      *
-     * @param length the current place value (1, 10, 100, etc.) based on which sorting pass is happening
+     * @param length the current character position based on which sorting pass is happening
      * 
-     * - Chooses the active 2D array (either array1 or array2) depending on whether the current place value is odd or even.
-     * - Iterates over each digit row (0-9) and prints the numbers stored in in, stopping at null (empty spots, means there is no more numbers left behind).
+     * - Chooses the active 2D array (either array1 or array2) depending on whether the maximum string length is even and the current character position is odd or vice versa.
+     * - Iterates over each character row (a-z and one null row) and prints the strings stored in it, stopping at null (empty spots, means there is no more strings left behind).
     */
     public static void displayArray(int length) {
         String[][] activeArray;
 
-        // if it is odd pass, the active array is array2, else it is array1
+        // If the maximum string length is even and the current character position is odd or vice versa, use array1; otherwise, use array2.
         if (((maxStringLength % 2 == 0) && (length % 2 == 1)) || ((maxStringLength % 2 == 1) && (length % 2 == 0))) {
             activeArray = array1;
         } else {
             activeArray = array2;
         }
 
-        for (int i = 0; i < activeArray.length; i++) { // Outer loop, loop through 10 digit row of active array
+        for (int i = 0; i < activeArray.length; i++) { // Outer loop, loop through 27 character row of active array
             int ch;
             if (i == 0) ch = 32;
             else ch = i + 64;
             System.out.print(((char) ch) + ": ");
-            for (int j = 0; j < activeArray[i].length; j++) { // Inner loop, loop through every numbers contain in that digit row
-                if (activeArray[i][j] == null) break; // if the current number is null, means there's no other more numbers left in this digit rows, we break the inner loop
-                System.out.print(activeArray[i][j] + " "); // display the number in the digit row
+            for (int j = 0; j < activeArray[i].length; j++) { // Inner loop, loop through every strings contain in that character row
+                if (activeArray[i][j] == null) break; // If the current string is null, means there's no other more strings left in this character rows, we break the inner loop
+                System.out.print(activeArray[i][j] + " "); // Display the strings in the active array
             }
             System.out.println();
         }
@@ -388,7 +457,7 @@ public class StringSort {
     }
 
     /**
-     * Method used to reorder numbers from the 2D array into a 1D array after the final sorting pass.
+     * Method used to reorder strings from the 2D array into a 1D array after the final sorting pass.
      * It scans the final active sorting array (array1 or array2 depending on maxStringLength)
      * and transfers all non-null values into a one-dimensional SortedList array.
     */
@@ -437,56 +506,67 @@ public class StringSort {
     }
 
     /** 
-     * Methods use to sort an array of unsorted numbers using radix sort
-     * @param numbers Array of integers to be sorted.
+     * Methods use to sort an array of unsorted numbers using radix sort.
+     * @param words Array of words to be sorted.
      */
     public static void Sort(String[] words) {
         
-        // initialize two 2D array instances with numbers.length that is use for sorting
+        // Call this method to initialize the 2D array and charRowCounts array with the size of the input array
         initializeArray(words.length);
-        operationCount += 1; // one method call
+        operationCount += 1; // one method call (initializeArray(words.length))
 
-        // Find the largest number in the unsorted number array to determine the maximum digit length needed for sorting
+        // Find the longest string in the unsorted number array to determine the maximum string length needed for sorting
         String largestValue = findLongestString(words);
-        operationCount += 2; // one method call, one assignment
+        /*
+         * one method call (findLongestString(words))
+         * one assignment (largestValue = findLongestString(words))
+         */
+        operationCount += 2; 
 
-        // Calculate how many digit places (maxStringLength) the sorting needs to process
+        // Get the maximum string length of the longest string found in the array
         maxStringLength = largestValue.length();
-        operationCount += 1; // one method call
+        /**
+         * one assignment (maxStringLength = largestValue.length())
+         * one accessing member variable (largestValue.length())
+        */
+        operationCount += 2;
 
         int passCount = 1;
-        // Loop through each digit place (1s, 10s, 100s, etc.) until no higher place exists
-        operationCount += 1; // one assignment (placeValue = 1)
-        for (int length = maxStringLength - 1; length >= 0; length--) {
-            /** 
-             * one addition, one assignment (placeValue *= 10) 
-             * one arithmetic operation (division /)
-             * one comparison (largestValue / placeValue)
-            */
-            operationCount += 4;
+        // one assignment (passCount = 1)
+        operationCount += 1;
 
-            // perform sorting pass based on current placed value
+         // Loop through each character position until charcter position is less than 0
+         // One assignment (int length = maxStringLength - 1)
+         operationCount += 1;
+        for (int length = maxStringLength - 1; length >= 0; length--) {
+            /*
+             * one comparison (length >= 0)
+             * one minus and one assignment (length--)
+             */
+            operationCount += 3;
+
+            // Perform sorting pass based on current character position
             sortingPass(words, length);
             operationCount += 1; // one method call
 
-            // print the array state after sorted by this digit place
+            // Print the array state after sorted by the current character position
             System.out.println("=== After sorting  " + passCount + " ===");
             displayArray(length);
             passCount++;
         }
-        // one extra comparison (largestValue / placeValue > 0), one arithmetic operation (division /)
+        // One extra comparison (length >= 0) where length = -1, reached the end of the loop
         operationCount += 2;
     }
 
     public static void main(String[] args) {
 
-        // number array to sort
+        // string array to sort
         String[] words = {"apple", "aeroplan", "bat", "baby", "cherry", "zebra", "ape", "lizard", "bird", 
                             "eagle", "elephant", "giraffe", "deer", "lion", "tiger", "kill", "first",
                             "dragon", "hat", "whale", "beef", "house", "yatch", "xylem", "blood",
                             "pop", "push", "oil", "man", "red", "quartz", "dance", "juice", "orange"};
 
-        // display the initial array of numbers
+        // Display the initial array of strings before sorting
         System.out.println("=== Initial array ===");
         System.out.print("Initial array: ");
         for (String word : words) {
@@ -494,18 +574,18 @@ public class StringSort {
         }
         System.out.println("\n");
 
-        // pass the array to the Sorting algorithm methods
+        // Pass the array to the Sorting algorithm methods
         Sort(words);
 
         // Reorder after sorting
         Reorder();
 
-        // display the final array after sort
+        // Display the final array after sort
         System.out.println("=== Final sorted array ===");
         System.out.print("Sorted array: "); 
         displaySortedList();
 
-        // display how many operation count is in the sorting algorithm
+        // Display how many operation count is in the sorting algorithm
         System.out.println("\nTotal primitive operations: " + operationCount);
     }
 }

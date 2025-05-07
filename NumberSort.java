@@ -1,4 +1,4 @@
-public class Algorithm1 {
+public class NumberSort {
 
     // Counter to track the primitive operations
     private static int operationCount = 0;
@@ -14,7 +14,7 @@ public class Algorithm1 {
     private static Integer[][] array1;
     private static Integer[][] array2;
 
-    // 
+    // Parallel array that stores the reordered sorted numbers
     private static int[] SortedList;
 
     // Parallel array that keep track the number of elements in each digit row (0-9)
@@ -53,7 +53,7 @@ public class Algorithm1 {
      * Clear all numbers in the given 2D array by setting them to NULL.
      * 
      * This ensures the digit row is empty and ready for the next sorting pass.
-     * @param array the 2D array to clear, (Setting all elements in the digit row from 0-9 to null)
+     * @param array the 2D array to be cleared, (Setting all elements in the digit row from 0-9 to null)
     */
     private static void clearArray(Integer[][] array) {
         for (int i = 0; i < array.length; i++) { // outer loop, loop through 10 digit row (0-9)
@@ -82,7 +82,7 @@ public class Algorithm1 {
     /**
      * Distributes numbers into the appropriate digit row based on the current digit place value.
      * 
-     * This method handles the core step of radix sort, where numbers are sort by 
+     * This method handles the core step of radix sort, where numbers are sorted by 
      * their digit values (0-9) at a given place value (1, 10, 100, 1000 etc.)
      * 
      * Depending on whether we're sorting on the first pass (placeValue == 1),
@@ -99,7 +99,7 @@ public class Algorithm1 {
      * After distributing, parallel digit row counts & previous array is reset, 
      * so it can be used for the next sorting pass.
      * 
-     * @param array input array contains numbers to be sort, only used for the first sorting pass
+     * @param array input array contains numbers to be sorted.
      * @param placeValue current place value (1, 10, 100, 1000 etc.)
      */    
     private static void sortingPass(int[] array, int placeValue) {
@@ -366,7 +366,7 @@ public class Algorithm1 {
      * @param placeValue the current place value (1, 10, 100, etc.) based on which sorting pass is happening
      * 
      * - Chooses the active 2D array (either array1 or array2) depending on whether the current place value is odd or even.
-     * - Iterates over each digit row (0-9) and prints the numbers stored in in, stopping at null (empty spots, means there is no more numbers left behind).
+     * - Iterates over each digit row (0-9) and prints the numbers stored in it, stopping at null (empty spots, means there is no more numbers left behind).
     */
     public static void displayArray(int placeValue) {
         Integer[][] activeArray;
