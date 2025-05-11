@@ -561,8 +561,7 @@ public class StringSort {
     public static void main(String[] args) {
 
         // string array to sort
-        String[] words = {"kfd", "tuz", "qmh", "bvn", "azp", "wle", "jxo", "rcy", "mqa", "znb", "plv", "gdr", "hxt", "syu", "vcm", "ebk", "djy", "fpo", "icr", "bzu", "nwl", "oyk", "qtb", "jcl", "xkp", "lrw", "qoa", "vbs", "azx", "tmn", "rps", "lyd", "pwh", "gsl", "mnb", "cfj", "jwd", "qex", "ytr", "vkp", "ufz", "kqx", "hjy", "wvm", "pxn", "oer", "sdf", "lqi", "zxy", "vfw", "mek", "pju", "rkt", "sgb", "wqz", "yhn", "oxv", "fkn", "dwp", "zmg", "bqt", "lvs", "ycp", "rjh", "pym", "kzw", "vtd", "hqf", "xlg", "srn", "cby", "ojd", "wfg", "mpx", "zrk", "tjc", "vhy", "bnq", "sdv", "kyu"}       ;
-
+        String[] words = {"one", "two", "three", "four", "five", "six", "seven", "eight"};
         // Display the initial array of strings before sorting
         System.out.println("=== Initial array ===");
         System.out.print("Initial array: ");
